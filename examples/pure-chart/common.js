@@ -64,8 +64,34 @@ function getMaxValue (data) {
   return Math.max.apply(null, values)
 }
 
+function getMinValue (data) {
+  let values = []
+
+  data.map((value) => {
+    if (typeof value === 'number') {
+      values.push(value)
+    } else if (typeof value === 'object') {
+      if (typeof value.y === 'number') {
+        values.push(value.y)
+      } else if (Array.isArray(value.data)) {
+        value.data.map((v) => {
+          if (typeof v === 'number') {
+            values.push(v)
+          } else if (typeof v === 'object' && typeof v.y === 'number') {
+            values.push(v.y)
+          }
+        })
+      }
+    }
+  })
+
+  if (values.length === 0) return 0
+
+  return Math.min.apply(null, values)
+}
+
 export const initData = (dataProp, height, gap, numberOfPoints = 5) => {
-  let guideArray, max, sortedData
+  let guideArray, max,min, sortedData
   if (!dataProp || !Array.isArray(dataProp) || dataProp.length === 0) {
     return {
       sortedData: [],
@@ -74,7 +100,8 @@ export const initData = (dataProp, height, gap, numberOfPoints = 5) => {
     }
   }
 
-  max = Math.max(getMaxValue(dataProp))
+  max = getMaxValue(dataProp)
+  min = getMinValue(dataProp)
   guideArray = getGuideArray(max, height, numberOfPoints)
 
   dataProp = flattenData(dataProp)
@@ -83,6 +110,7 @@ export const initData = (dataProp, height, gap, numberOfPoints = 5) => {
   return {
     sortedData: sortedData,
     max: max,
+    min:min,
     selectedIndex: null,
     nowHeight: 200,
     nowWidth: 200,
@@ -240,10 +268,10 @@ export const drawYAxis = (color = '#e0e0e0') => {
   )
 }
 
-export const drawYAxisLabels = (arr, height, minValue, color = '#000000', symbol='') => {
+export const drawYAxisLabels = (arr, height, minValue, color = '#000000') => {
   return (
     <View style={{
-      width: 33 + 5*symbol.length,
+      width: 33,
       height: height,
       justifyContent: 'flex-end',
       alignItems: 'flex-end',
@@ -261,7 +289,7 @@ export const drawYAxisLabels = (arr, height, minValue, color = '#000000', symbol
           <Text style={{fontSize: 11}}>0</Text>
         </View>
       ) : arr.map((v, i) => {
-        if (v[1] > height-5) return null
+        if (v[1] > height) return null
         return (
           <View
             key={'guide' + i}
@@ -269,7 +297,7 @@ export const drawYAxisLabels = (arr, height, minValue, color = '#000000', symbol
               bottom: v[1] - 5,
               position: 'absolute'
             }}>
-            <Text style={{fontSize: 11, color: color}}>{v[0] + ' ' + symbol}</Text>
+            <Text style={{fontSize: 11, color: color}}>{v[0]}</Text>
           </View>
         )
       })}
@@ -335,10 +363,11 @@ export const drawXAxisLabels = (sortedData, gap, color = '#000000', showEvenNumb
     <View style={{
       width: '100%',
       paddingVertical: 10,
-      height: 10
+      height: 0
     }}>
       {sortedData.map((data, i) => {
         // if (data[3] && i % 2 === 1) {
+          // console.log(data['gap'])
         if (data['x'] && i % 2 === 1 || !showEvenNumberXaxisLabel) {
           return (
             <View key={'label' + i} style={{
@@ -346,7 +375,7 @@ export const drawXAxisLabels = (sortedData, gap, color = '#000000', showEvenNumb
               // left: data[0] - gap / 2,
               left: data['gap'] - gap / 2,
               width: gap,
-              alignItems: 'center'
+              alignItems: 'center',
             }}>
               <Text style={{fontSize: 9, color: color}}>
                 {
