@@ -11,13 +11,18 @@ export default class ColumnChartItem extends Component {
       if (seriesIndex === (seriesCount - 1)) {
         lastElementMarginRight = this.props.defaultMargin
       }
+
+      // console.log("a"+seriesCount+"-" + lastElementMarginRight)
+      // console.log("chart:" + JSON.stringify(this.props.seriesArray[seriesIndex].data[this.props.dataIndex]['y'] + "-" + this.props.max))
+
       renders.push(
         <View key={seriesIndex} style={[styles.bar, {
           width: this.props.defaultWidth / seriesCount,
           height: this.props.seriesArray[seriesIndex].data[this.props.dataIndex]['ratioY'],
           marginRight: lastElementMarginRight,
-          backgroundColor: this.props.seriesArray[seriesIndex].seriesColor,
-          borderColor: this.props.isSelected ? this.props.highlightColor : this.props.defaultBorderColor
+          // marginLeft: this.props.dataIndex === 0 ? this.props.defaultWidth/2 : 0,
+          backgroundColor: this.props.seriesArray[seriesIndex].data[this.props.dataIndex]['y'] === this.props.max ? this.props.maxColor : (this.props.seriesArray[seriesIndex].data[this.props.dataIndex]['y'] === this.props.min ? this.props.minColor : this.props.primaryColor),
+          borderColor: this.props.isSelected ? this.props.highlightColor : '#FFFFFF'
         }]} />
       )
     }
@@ -42,7 +47,7 @@ const styles = StyleSheet.create({
   },
   bar: {
     justifyContent: 'flex-end',
-    borderWidth: 1
+    borderWidth: 1,
   }
 })
 
@@ -53,5 +58,9 @@ ColumnChartItem.propTypes = {
   defaultHeight: PropTypes.number,
   defaultMargin: PropTypes.number,
   primaryColor: PropTypes.string,
-  highlightColor: PropTypes.string
+  maxColor: PropTypes.string,
+  minColor: PropTypes.string,
+  highlightColor: PropTypes.string,
+  max: PropTypes.number,
+  min:PropTypes.number
 }
