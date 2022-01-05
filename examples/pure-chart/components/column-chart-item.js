@@ -22,7 +22,9 @@ export default class ColumnChartItem extends Component {
           marginRight: lastElementMarginRight,
           // marginLeft: this.props.dataIndex === 0 ? this.props.defaultWidth/2 : 0,
           backgroundColor: this.props.seriesArray[seriesIndex].data[this.props.dataIndex]['y'] === this.props.max ? this.props.maxColor : (this.props.seriesArray[seriesIndex].data[this.props.dataIndex]['y'] === this.props.min ? this.props.minColor : this.props.primaryColor),
-          borderColor: this.props.isSelected ? this.props.highlightColor : '#FFFFFF'
+          borderColor: this.props.isSelected ? this.props.highlightColor : '#FFFFFF',
+        borderTopLeftRadius:8,
+          borderTopRightRadius:8
         }]} />
       )
     }
